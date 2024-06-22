@@ -36,7 +36,6 @@
 
   <build>
     <plugins>
-      <!-- Maven Compiler Plugin -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
@@ -49,15 +48,14 @@
         </configuration>
       </plugin>
 
-      <!-- Avro Maven Plugin for Schema -->
       <plugin>
         <groupId>org.apache.avro</groupId>
         <artifactId>avro-maven-plugin</artifactId>
         <version>${avro.version}</version>
         <executions>
           <execution>
-            <id>schema</id>
-            <phase>generate-sources</phase>
+            <id>generate-schema</id>
+            <phase>initialize</phase>
             <goals>
               <goal>schema</goal>
             </goals>
@@ -65,7 +63,6 @@
         </executions>
       </plugin>
 
-      <!-- Maven Antrun Plugin for Custom Tasks -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-antrun-plugin</artifactId>
@@ -73,37 +70,126 @@
         <executions>
           <execution>
             <id>custom-tasks</id>
-            <phase>process-sources</phase>
+            <phase>generate-sources</phase>
             <goals>
               <goal>run</goal>
             </goals>
             <configuration>
               <target>
-                <echo message="Running custom tasks between schema and protocol" />
-                <!-- Add your tasks here -->
+                <echo message="Running custom tasks between schema and protocol"/>
+                <sleep seconds="10"/>
               </target>
             </configuration>
           </execution>
         </executions>
       </plugin>
 
-      <!-- Avro Maven Plugin for Protocol and IDL Protocol -->
       <plugin>
         <groupId>org.apache.avro</groupId>
         <artifactId>avro-maven-plugin</artifactId>
         <version>${avro.version}</version>
         <executions>
           <execution>
-            <id>protocol</id>
-            <phase>generate-resources</phase>
+            <id>generate-idl-protocol</id>
+            <phase>process-sources</phase>
             <goals>
-              <goal>protocol</goal>
               <goal>idl-protocol</goal>
             </goals>
           </execution>
         </executions>
       </plugin>
+
+      <plugin>
+        <artifactId>maven-resources-plugin</artifactId>
+        <inherited>true</inherited>
+        <executions>
+          <execution>
+            <id>copy-version-properties</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.directory}/classes</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>${project.basedir}/src/main/resources</directory>
+                  <includes>
+                    <include>**/*</include>
+                  </includes>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+          <execution>
+            <id>copy-pom-properties</id>
+            <phase>install</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.directory}/maven-archiver</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>${project.basedir}/src/main/resources</directory>
+                  <includes>
+                    <include>**/*</include>
+                  </includes>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+          <execution>
+            <id>copy-context-xml</id>
+            <phase>prepare-package</phase>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <configuration>
+              <outputDirectory>${project.build.directory}/META-INF</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>${project.basedir}/src/main/config/tomcat/META-INF</directory>
+                  <includes>
+                    <include>**/*</include>
+                  </includes>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
+
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.eclipse.m2e</groupId>
+          <artifactId>lifecycle-mapping</artifactId>
+          <version>1.0.0</version>
+          <configuration>
+            <lifecycleMappingMetadata>
+              <pluginExecutions>
+                <pluginExecution>
+                  <pluginExecutionFilter>
+                    <groupId>org.apache.avro</groupId>
+                    <artifactId>avro-maven-plugin</artifactId>
+                    <versionRange>[1.8.1,)</versionRange>
+                    <goals>
+                      <goal>schema</goal>
+                      <goal>idl-protocol</goal>
+                    </goals>
+                  </pluginExecutionFilter>
+                  <action>
+                    <ignore/>
+                  </action>
+                </pluginExecution>
+              </pluginExecutions>
+            </lifecycleMappingMetadata>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
   </build>
 
   <dependencies>

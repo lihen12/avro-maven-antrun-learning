@@ -2,5 +2,6 @@
 <project name="maven-antrun-" default="main">
   <target name="main">
     <echo message="Running custom tasks between schema and protocol" />
+    <sleep seconds="10" />
   </target>
 </project>
