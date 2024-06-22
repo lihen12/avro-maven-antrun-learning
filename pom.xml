@@ -12,12 +12,12 @@
   <url>https://github.com/alexholmes/avro-maven</url>
 
   <properties>
-    <jdkLevel>1.6</jdkLevel>
+    <jdkLevel>1.8</jdkLevel>
     <requiredMavenVersion>[2.1,)</requiredMavenVersion>
     <main.basedir>${project.basedir}</main.basedir>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.build.outputEncoding>UTF-8</project.build.outputEncoding>
-    <maven.compiler>2.0.2</maven.compiler>
+    <maven.compiler>3.8.1</maven.compiler>
     <avro.version>1.7.4</avro.version>
   </properties>
 
@@ -34,30 +34,69 @@
     </developer>
   </developers>
 
-
   <build>
     <plugins>
+      <!-- Maven Compiler Plugin -->
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>2.3.2</version>
+        <version>${maven.compiler}</version>
         <configuration>
           <source>${jdkLevel}</source>
           <target>${jdkLevel}</target>
           <showDeprecation>true</showDeprecation>
           <showWarnings>true</showWarnings>
-
         </configuration>
       </plugin>
+
+      <!-- Avro Maven Plugin for Schema -->
       <plugin>
         <groupId>org.apache.avro</groupId>
         <artifactId>avro-maven-plugin</artifactId>
         <version>${avro.version}</version>
         <executions>
           <execution>
+            <id>schema</id>
             <phase>generate-sources</phase>
             <goals>
               <goal>schema</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- Maven Antrun Plugin for Custom Tasks -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <version>3.1.0</version>
+        <executions>
+          <execution>
+            <id>custom-tasks</id>
+            <phase>process-sources</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <configuration>
+              <target>
+                <echo message="Running custom tasks between schema and protocol" />
+                <!-- Add your tasks here -->
+              </target>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- Avro Maven Plugin for Protocol and IDL Protocol -->
+      <plugin>
+        <groupId>org.apache.avro</groupId>
+        <artifactId>avro-maven-plugin</artifactId>
+        <version>${avro.version}</version>
+        <executions>
+          <execution>
+            <id>protocol</id>
+            <phase>generate-resources</phase>
+            <goals>
               <goal>protocol</goal>
               <goal>idl-protocol</goal>
             </goals>
@@ -66,15 +105,11 @@
       </plugin>
     </plugins>
   </build>
+
   <dependencies>
     <dependency>
       <groupId>org.apache.avro</groupId>
       <artifactId>avro</artifactId>
-      <version>${avro.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.avro</groupId>
-      <artifactId>avro-maven-plugin</artifactId>
       <version>${avro.version}</version>
     </dependency>
     <dependency>
