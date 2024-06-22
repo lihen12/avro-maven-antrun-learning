@@ -70,13 +70,13 @@
         <executions>
           <execution>
             <id>custom-tasks</id>
-            <phase>generate-sources</phase>
+            <phase>generate-sources</phase> <!-- Changed to generate-sources phase -->
             <goals>
               <goal>run</goal>
             </goals>
             <configuration>
               <target>
-                <echo message="Running custom tasks between schema and protocol"/>
+                <echo message="Running custom tasks before idl-protocol"/>
                 <sleep seconds="10"/>
               </target>
             </configuration>
@@ -91,7 +91,7 @@
         <executions>
           <execution>
             <id>generate-idl-protocol</id>
-            <phase>process-sources</phase>
+            <phase>process-sources</phase> <!-- Changed to process-sources phase -->
             <goals>
               <goal>idl-protocol</goal>
             </goals>
